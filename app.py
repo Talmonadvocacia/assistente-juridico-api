@@ -1,9 +1,9 @@
 from flask import Flask, request
 import os
-from openai import OpenAI
+import openai
 
 app = Flask(__name__)
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 @app.route("/health")
 def health():
@@ -14,21 +14,15 @@ def webhook():
     data = request.json
     pergunta = data.get("texto", "")
 
-    resposta = client.chat.completions.create(
-        model="gpt-4.1-mini",
+    resposta = openai.ChatCompletion.create(
+        model="gpt-3.5-turbo",
         messages=[
-            {
-                "role": "system",
-                "content": "Você é um assistente jurídico especializado em direito previdenciário brasileiro. Responda de forma clara, simples e ética."
-            },
-            {
-                "role": "user",
-                "content": pergunta
-            }
+            {"role": "system", "content": "Você é um assistente jurídico especializado em direito previdenciário brasileiro."},
+            {"role": "user", "content": pergunta}
         ]
     )
 
-    texto_resposta = resposta.choices[0].message.content
+    texto_resposta = resposta["choices"][0]["message"]["content"]
 
     return {
         "pergunta": pergunta,
