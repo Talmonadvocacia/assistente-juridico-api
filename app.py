@@ -11,19 +11,17 @@ def health():
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    data = request.json
+    data = request.get_json(force=True)
     pergunta = data.get("texto", "")
 
-    resposta = client.responses.create(
+    resp = client.responses.create(
         model="gpt-4.1-mini",
         input=pergunta
     )
 
-    texto_resposta = resposta.output_text
-
     return {
         "pergunta": pergunta,
-        "resposta": texto_resposta
+        "resposta": resp.output_text
     }
 
 if __name__ == "__main__":
