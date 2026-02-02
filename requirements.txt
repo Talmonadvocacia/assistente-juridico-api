@@ -1,2 +1,2 @@
-flask==3.0.0
-openai==0.28.1
+flask
+gunicorn
