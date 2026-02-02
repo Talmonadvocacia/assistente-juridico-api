@@ -1,26 +1,21 @@
 from flask import Flask, request, jsonify
 import os
-import openai
 
 app = Flask(__name__)
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-@app.route("/health")
+@app.route("/health", methods=["GET"])
 def health():
-    return {"status": "ok"}
+    return jsonify({"status": "ok"})
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
-    data = request.get_json()
-    pergunta = data.get("texto", "")
+    data = request.json
+    texto = data.get("texto", "")
+    
+    return jsonify({
+        "resposta": f"Recebi sua mensagem: {texto}"
+    })
 
-    resposta = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "Você é um assistente jurídico especializado em direito previdenciário brasileiro."},
-            {"role": "user", "content": pergunta}
-        ]
-    )
-
-    texto_resposta = resposta["choices"][0]["]()_
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 3000))
+    app.run(host="0.0.0.0", port=port)
